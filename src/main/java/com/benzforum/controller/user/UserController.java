@@ -31,18 +31,22 @@ public class UserController {
         if (!userDto.getPassword().equals(userDto.getPasswordRepeat()))
             return new ResponseEntity("Пароли не одинаковые", HttpStatus.BAD_REQUEST);
         User user = new User();
-        if (userDto.getUserName() != null)
-            user.setUserName(userDto.getUserName());
-        else
-            user.setUserName("");
-        if (userDto.getUserSurname() != null)
-            user.setUserSurname(userDto.getUserSurname());
-        else
-            user.setUserSurname("");
+        user.setUserName(userDto.getUserName() != null ? userDto.getUserName() : "");
+        user.setUserSurname(userDto.getUserSurname() != null ? userDto.getUserSurname() : "");
         user.setNickname(userDto.getNickname());
         user.setUserPassword(userDto.getPassword());
         user.setEmail(userDto.getEmail());
         userService.addUser(user);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity userId(@PathVariable("id") Long id) {
+        User user = userService.getUserById(id);
+        if (user == null)
+            return new ResponseEntity("Такого пользователя не существует", HttpStatus.BAD_REQUEST);
+        user.setUserPassword("");
+        user.setEmail("");
         return ResponseEntity.ok(user);
     }
 

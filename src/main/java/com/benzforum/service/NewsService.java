@@ -20,4 +20,5 @@ public class NewsService {
     public List<NewsItem> getAllNews() {
         return newsRepo.findAll();
     }
+
 }

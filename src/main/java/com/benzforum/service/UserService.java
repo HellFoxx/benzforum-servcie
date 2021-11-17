@@ -22,7 +22,11 @@ public class UserService {
     }
 
     public boolean containsNickname(String nickname) {
-        return userRepo.containsNickname(nickname).equals(nickname);
+        String res = userRepo.containsNickname(nickname);
+        return res != null;
     }
 
+    public User getUserById(Long id) {
+        return userRepo.getById(id);
+    }
 }

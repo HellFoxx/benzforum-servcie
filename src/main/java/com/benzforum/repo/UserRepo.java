@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepo extends JpaRepository<User, Long> {
 
-    @Query(value = "select nickname from users u where u.nickname = :nickname")
-    String containsNickname(@Param("nick") String nickname);
+    @Query(value = "select nickname from users where nickname = :nickname", nativeQuery = true)
+    String containsNickname(String nickname);
 
 }
