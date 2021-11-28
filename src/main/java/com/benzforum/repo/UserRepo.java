@@ -13,4 +13,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
     @Query(value = "select nickname from users where nickname = :nickname", nativeQuery = true)
     String containsNickname(String nickname);
 
+    @Query(value = "select u from User u where u.nickname = :nickname")
+    User getUserByNickname(String nickname);
 }

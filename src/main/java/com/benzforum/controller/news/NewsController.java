@@ -13,7 +13,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/news")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true", allowedHeaders = "*")
 public class NewsController {
 
     private final NewsService newsService;
