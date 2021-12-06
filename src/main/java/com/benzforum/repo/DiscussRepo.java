@@ -10,9 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ForumRepo extends JpaRepository<Discuss, Long> {
-
-    @Query(value = "select m from Message m where m.discussId = :id")
-    List<Message> findMessagesByDiscussId(@Param("id") Long id);
+public interface DiscussRepo extends JpaRepository<Discuss, Long> {
 
 }

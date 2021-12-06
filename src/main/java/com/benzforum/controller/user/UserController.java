@@ -1,13 +1,18 @@
 package com.benzforum.controller.user;
 
 import com.benzforum.dto.user.UserDto;
+import com.benzforum.dto.user.UserEditDto;
 import com.benzforum.dto.user.UserSignInDto;
 import com.benzforum.model.user.User;
+import com.benzforum.model.user.UserType;
 import com.benzforum.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -40,6 +45,7 @@ public class UserController {
         user.setNickname(userDto.getNickname());
         user.setUserPassword(userDto.getPassword());
         user.setEmail(userDto.getEmail());
+        user.setUserType(UserType.SIMPLE);
         userService.addUser(user);
         return ResponseEntity.ok(user);
     }
@@ -54,28 +60,68 @@ public class UserController {
         if (user == null)
             return new ResponseEntity("Пользователя с таким никнеймом не существует", HttpStatus.BAD_REQUEST);
         if (!user.getUserPassword().equals(userSignInDto.getPassword()))
-            return new ResponseEntity("Пароль введён неверно!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("Пароль введён неверно", HttpStatus.BAD_REQUEST);
+        user.setUserPassword("");
         Cookie cookieId = new Cookie("userId", user.getId().toString());
         cookieId.setPath("/");
-        Cookie cookieNickname = new Cookie("userNickname", user.getNickname());
-        cookieNickname.setPath("/");
+        cookieId.setHttpOnly(true);
         // if true 6 month else 30 minutes
-        int cookieAge = userSignInDto.getIsRemember() ? (6 * 30 * 24 * 3600) : (30 * 60);
-        cookieId.setMaxAge(cookieAge);
-        cookieNickname.setMaxAge(cookieAge);
+        cookieId.setMaxAge(userSignInDto.getIsRemember() ? (6 * 30 * 24 * 3600) : (30 * 60));
         response.addCookie(cookieId);
-        response.addCookie(cookieNickname);
-        return new ResponseEntity(true, HttpStatus.OK);
+        return ResponseEntity.ok(user);
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity userId(@PathVariable("id") Long id) {
+    @GetMapping(
+            value = "/auth",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity authUser(@CookieValue(value = "userId", defaultValue = "") String userId) {
+        if (userId.equals(""))
+            return ResponseEntity.ok(null);
+        Long id = Long.parseLong(userId);
         User user = userService.getUserById(id);
         if (user == null)
-            return new ResponseEntity("Такого пользователя не существует", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("NO_USER", HttpStatus.BAD_REQUEST);
         user.setUserPassword("");
-        user.setEmail("");
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping(
+            value = "/reauth",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity reauthUser(
+            @CookieValue(value = "userId", defaultValue = "") String userId,
+            HttpServletResponse response) {
+        if (userId.equals(""))
+            return new ResponseEntity("NO_COOKIES", HttpStatus.BAD_REQUEST);
+        Cookie cookie = new Cookie("userId", null);
+        cookie.setMaxAge(0);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ResponseEntity.ok("ok");
+    }
+
+    @GetMapping(
+            value = "nickname/{nickname}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity checkNickname(@PathVariable(value = "nickname") String nickname) {
+        return ResponseEntity.ok(userService.containsNickname(nickname));
+    }
+
+    @PostMapping(
+            value = "/edit",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity editUser(
+            @RequestBody UserEditDto userEditDto,
+            @CookieValue(value = "userId", defaultValue = "") String userId) {
+        userService.updateUser(Long.parseLong(userId), userEditDto);
+        return ResponseEntity.ok("ok");
     }
 
 }

@@ -1,12 +1,14 @@
 package com.benzforum.model.message;
 
 import com.benzforum.model.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "messages")
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Message {
 
     @Id
@@ -18,7 +20,7 @@ public class Message {
     private String msgText;
 
     @Column(name = "public_date")
-    @Temporal(TemporalType.TIMESTAMP)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Date publicDate;
 
     @ManyToOne

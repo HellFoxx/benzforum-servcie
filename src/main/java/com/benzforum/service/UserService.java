@@ -1,11 +1,14 @@
 package com.benzforum.service;
 
+import com.benzforum.dto.user.UserEditDto;
 import com.benzforum.model.user.User;
 import com.benzforum.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -22,15 +25,25 @@ public class UserService {
     }
 
     public boolean containsNickname(String nickname) {
-        String res = userRepo.containsNickname(nickname);
-        return res != null;
+        return userRepo.containsNickname(nickname) != null;
     }
 
     public User getUserById(Long id) {
-        return userRepo.getById(id);
+        User user = userRepo.getById(id);
+        return user;
     }
 
     public User getUserByNickname(String nickname) {
         return userRepo.getUserByNickname(nickname);
+    }
+
+    public void updateUser(Long id, UserEditDto userEditDto) {
+        userRepo.updateUser(
+                id,
+                userEditDto.getName(),
+                userEditDto.getSurname(),
+                userEditDto.getNickname(),
+                userEditDto.getEmail()
+        );
     }
 }

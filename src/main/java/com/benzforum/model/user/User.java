@@ -1,11 +1,13 @@
 package com.benzforum.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class User {
 
     @Id
@@ -21,6 +23,14 @@ public class User {
     private String email;
 
     private String userPassword;
+
+    private String userType;
+
+    public void setUserType(UserType userType) {
+        this.userType = userType == null ? null : userType.getName();
+    }
+
+    public void setId(Long id) { this.id = id; }
 
     public void setUserName(String userName) {
         this.userName = userName;
@@ -64,5 +74,9 @@ public class User {
 
     public String getUserPassword() {
         return userPassword;
+    }
+
+    public UserType getUserType() {
+        return userType == null ? null : UserType.fromUserType(userType);
     }
 }
