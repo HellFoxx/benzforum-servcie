@@ -2,9 +2,9 @@ package com.benzforum.controller.forum;
 
 import com.benzforum.dto.message.MessageDto;
 import com.benzforum.model.discuss.Discuss;
+import com.benzforum.model.discuss.DiscussStatus;
 import com.benzforum.model.message.Message;
 import com.benzforum.model.user.User;
-import com.benzforum.repo.UserRepo;
 import com.benzforum.service.DiscussService;
 import com.benzforum.service.MessageService;
 import com.benzforum.service.UserService;
@@ -37,7 +37,7 @@ public class ForumController {
             value = "",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getDiscussions() {
-        List<Discuss> discussions = discussService.getAllDiscussions();
+        List<Discuss> discussions = discussService.getAllActiveDiscussions();
         for (Discuss item : discussions) {
             item.getAuthor().setUserPassword("");
             item.getAuthor().setEmail("");
@@ -80,6 +80,18 @@ public class ForumController {
         author.setUserPassword("");
         message.setAuthor(author);
         return new ResponseEntity(message, HttpStatus.OK);
+    }
+
+    @PostMapping(
+            value = "/offer",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity offerDiscussion(@RequestBody Discuss discuss) {
+        discuss.setPublic_date(new Date());
+        discuss.setStatus(DiscussStatus.NON_ACTIVE);
+        discussService.addNewDiscussion(discuss);
+        return ResponseEntity.ok("DISCUSSION_ADDED");
     }
 
 }

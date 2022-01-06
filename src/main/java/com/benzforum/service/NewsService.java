@@ -21,4 +21,7 @@ public class NewsService {
         return newsRepo.findAll();
     }
 
+    public void save(NewsItem newsItem) {
+        newsRepo.save(newsItem);
+    }
 }

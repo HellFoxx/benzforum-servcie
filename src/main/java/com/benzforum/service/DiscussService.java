@@ -18,8 +18,23 @@ public class DiscussService {
         this.discussRepo = forumRepo;
     }
 
-    public List<Discuss> getAllDiscussions() {
-        return discussRepo.findAll();
+    public List<Discuss> getAllActiveDiscussions() {
+        return discussRepo.findAllActive();
     }
 
+    public void addNewDiscussion(Discuss discuss) {
+        discussRepo.save(discuss);
+    }
+
+    public List<Discuss> getAllNonActive() {
+        return discussRepo.getAllNonActive();
+    }
+
+    public void switchToActive(Long id) {
+        discussRepo.switchToActive(id);
+    }
+
+    public void deleteById(Long id) {
+        discussRepo.deleteById(id);
+    }
 }

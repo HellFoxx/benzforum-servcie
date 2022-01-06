@@ -1,0 +1,4 @@
+id,user_name,user_surname,nickname,email,user_password,user_type
+1,Андрей,Лисов,HellFoxx,alisov3102@gmail.com,123456,ADMIN
+20,Иван,Макиев,Ivan234,Vantuz228@gmail.com,123456,SIMPLE
+19,Иван,Пупкин,Vanya228,vantuz@gmail.com,123456,SIMPLE

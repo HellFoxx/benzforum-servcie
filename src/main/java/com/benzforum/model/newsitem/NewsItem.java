@@ -14,15 +14,27 @@ public class NewsItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "title")
     private String title;
 
+    @Column(name = "news_text")
     private String newsText;
 
+    @Column(name = "img_src")
     private String imgSrc;
 
+    @Column(name = "extern_reff")
     private String externReff;
 
+    @Column(name = "public_date")
     private Date publicDate;
+
+    @Column(name = "author_id")
+    private Long authorId;
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -46,6 +58,10 @@ public class NewsItem {
 
     public void setPublicDate(Date publicDate) {
         this.publicDate = publicDate;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
     }
 
     public Long getId() {
